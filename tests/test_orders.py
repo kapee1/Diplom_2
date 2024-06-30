@@ -2,24 +2,24 @@ import requests
 import helper
 import urls
 import allure
+import data
 
 
 class TestOrderCreation:
     @allure.title('Создание нового заказа без авторизация пользователя')  # не соответствует документации
     def test_create_new_order_without_auth_success(self):
-        ingredients = helper.get_burger_ingredients()
-        response = requests.post(urls.BASE_URL + urls.CREATE_ORDER, data=ingredients)
+        response = requests.post(urls.BASE_URL + urls.CREATE_ORDER, data=data.burger_ingredients)
 
         assert response.status_code == 200
         assert response.json()['success'] is True and 'number' in response.json()['order']
 
     @allure.title('Создание нового заказа для авторизованного пользователя')
     def test_create_new_order_with_auth_success(self):
-        ingredients = helper.get_burger_ingredients()
         user = helper.generate_user_data()
         reg_response = requests.post(urls.BASE_URL + urls.CREATE_USER, data=user)
         token = reg_response.json()['accessToken']
-        response = requests.post(urls.BASE_URL + urls.CREATE_ORDER, data=ingredients, headers={'Authorization': token})
+        response = requests.post(urls.BASE_URL + urls.CREATE_ORDER, data=data.burger_ingredients,
+                                 headers={'Authorization': token})
         requests.delete(urls.BASE_URL + urls.DELETE_USER, headers={'Authorization': token})
 
         assert response.status_code == 200
@@ -43,11 +43,10 @@ class TestOrderCreation:
 class TestGetUserOrders:
     @allure.title('Получение списка заказов для авторизованного пользователя')
     def test_get_auth_user_orders_success(self):
-        ingredients = helper.get_burger_ingredients()
         user = helper.generate_user_data()
         reg_response = requests.post(urls.BASE_URL + urls.CREATE_USER, data=user)  # регистрация пользователя
         token = reg_response.json()['accessToken']
-        order_response = requests.post(urls.BASE_URL + urls.CREATE_ORDER, data=ingredients,
+        order_response = requests.post(urls.BASE_URL + urls.CREATE_ORDER, data=data.burger_ingredients,
                                        headers={'Authorization': token})  # создание заказа
         order_number = order_response.json()['order']['number']
         response = requests.get(urls.BASE_URL + urls.GET_USER_ORDERS,

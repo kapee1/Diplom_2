@@ -9,6 +9,4 @@ def generate_user_data():
     return user_data
 
 
-def get_burger_ingredients():
-    ingredients = {"ingredients": ["61c0c5a71d1f82001bdaaa6d", "61c0c5a71d1f82001bdaaa6f"]}
-    return ingredients
+
