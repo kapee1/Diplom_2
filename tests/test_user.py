@@ -1,5 +1,7 @@
 import pytest
 import requests
+
+import data
 import urls
 import helper
 import allure
@@ -22,7 +24,8 @@ class TestUserCreation:
         false_response = requests.post(urls.BASE_URL + urls.CREATE_USER, data=user)
 
         assert false_response.status_code == 403
-        assert false_response.json()['success'] is False and false_response.json()['message'] == 'User already exists'
+        assert false_response.json()['success'] is False
+        assert false_response.json()['message'] == data.user_already_exists_response_message
 
     @allure.title('Невозможно создать пользователя без заполнения любого из обязательных полей')
     @pytest.mark.parametrize('field', ('email', 'password', 'name'))
@@ -32,8 +35,8 @@ class TestUserCreation:
         response = requests.post(urls.BASE_URL + urls.CREATE_USER, data=user)
 
         assert response.status_code == 403
-        assert response.json()['success'] is False and response.json()['message'] == ('Email, password and name are '
-                                                                                      'required fields')
+        assert response.json()['success'] is False
+        assert response.json()['message'] == data.reg_without_required_fields_response_message
 
 
 class TestUserLogin:
@@ -53,7 +56,8 @@ class TestUserLogin:
         response = requests.post(urls.BASE_URL + urls.LOGIN_USER, data=user)
 
         assert response.status_code == 401
-        assert response.json()['success'] is False and response.json()['message'] == 'email or password are incorrect'
+        assert response.json()['success'] is False
+        assert response.json()['message'] == data.incorrect_email_or_password_response_message
 
 
 class TestChangeUserData:
@@ -77,4 +81,5 @@ class TestChangeUserData:
         response = requests.patch(urls.BASE_URL + urls.CHANGE_USER_DATA, data=user)
 
         assert response.status_code == 401
-        assert response.json()['success'] is False and response.json()['message'] == 'You should be authorised'
+        assert response.json()['success'] is False
+        assert response.json()['message'] == data.no_auth_response_message

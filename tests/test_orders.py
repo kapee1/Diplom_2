@@ -26,7 +26,8 @@ class TestOrderCreation:
         response = requests.post(urls.BASE_URL + urls.CREATE_ORDER)
 
         assert response.status_code == 400
-        assert response.json()['success'] is False and response.json()['message'] == 'Ingredient ids must be provided'
+        assert response.json()['success'] is False
+        assert response.json()['message'] == data.order_with_no_ingredients_response_message
 
     @allure.title('Невозможно создать заказ с неверным хэшем ингредиентов')
     def test_create_new_order_with_wrong_ingredients_hash_failed(self):
@@ -54,4 +55,5 @@ class TestGetUserOrders:
         response = requests.get(urls.BASE_URL + urls.GET_USER_ORDERS)
 
         assert response.status_code == 401
-        assert response.json()['success'] is False and response.json()['message'] == 'You should be authorised'
+        assert response.json()['success'] is False
+        assert response.json()['message'] == data.no_auth_response_message
